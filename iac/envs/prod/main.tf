@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 module "vpc" {
-  source = "../../modules/vpc/v1"
+  source = "../../modules/vpc/v1.0.0"
 
   vpc_name             = "custom-vpc"
   vpc_cidr             = var.vpc_cidr
