@@ -13,3 +13,19 @@ module "vpc" {
     Environment = "dev"
   }
 }
+
+module "eks" {
+  source = "../../modules/eks/v1.0.0"
+
+  cluster_name                     = "my-cluster"
+  cluster_version                  = "1.30"
+  cluster_endpoint_public_access   = false
+  vpc_id                           = module.vpc.vpc_id
+  subnet_ids                       = module.vpc.private_subnets
+  instance_types                   = ["t3.micro"]
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
+
+}
