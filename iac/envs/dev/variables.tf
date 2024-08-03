@@ -133,12 +133,6 @@ variable "iam_database_authentication_enabled" {
   default = true
 }
 
-# variable "vpc_security_group_ids" {
-#   type = list(string)
-#   description = "List of VPC security groups to associate and protect database"
-# }
-
-
 variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)
@@ -202,4 +196,42 @@ variable "machine_image_id" {
 variable "instance_type" {
   description = "The instance type to use for the instances"
   type        = string
+}
+
+// Module SG
+
+variable "security_group_name" {
+  description = "The name of the security group"
+  type        = string
+}
+
+variable "security_group_description" {
+  description = "The description of the security group"
+  type        = string
+  default     = "Managed by Terraform"
+}
+
+variable "allowed_ingress_ips" {
+  description = "List of allowed CIDR blocks for ingress traffic"
+  type        = list(string)
+  default     = []
+}
+
+variable "predefined_ingress_rules" {
+  description = "List of ingress rules to create by name"
+  type = list(string)
+  default = []
+}
+
+variable "allowed_egress_ips" {
+  description = "List of allowed CIDR blocks for egress traffic"
+  type        = list(string)
+  default     = []
+}
+
+
+variable "predefined_egress_rules" {
+  description = "List of egress rules to create by name"
+  type = list(string)
+  default = []
 }
