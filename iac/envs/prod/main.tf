@@ -29,3 +29,25 @@ module "eks" {
   }
 
 }
+
+module "rds" {
+  source = "../../modules/rds/v1.0.0"
+
+  database_identifier = var.database_identifier
+  database_engine = var.database_engine
+  engine_version = var.engine_version
+  instance_class = var.instance_class
+  allocated_storage = var.allocated_storage
+  database_name = var.database_name
+  database_username = var.database_username
+  database_port = var.database_port
+  iam_database_authentication_enabled = var.cluster_endpoint_public_access
+  // TODO: develop security group module and reference
+  vpc_security_group_ids = var.vpc_security_group_ids
+  vpc_subnet_ids = [module.vpc.private_subnets]
+  deletion_protection = true
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
+}

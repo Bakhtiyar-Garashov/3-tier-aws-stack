@@ -21,8 +21,9 @@ module "db" {
 
     tags = var.tags
 
-    # DB subnet group, attach existing
-    create_db_subnet_group = false
+    # DB subnet group, attach existing. 
+    # using single private subnet in eu-central-1a
+    create_db_subnet_group = true
     subnet_ids             = var.vpc_subnet_ids
 
     # Database Deletion Protection

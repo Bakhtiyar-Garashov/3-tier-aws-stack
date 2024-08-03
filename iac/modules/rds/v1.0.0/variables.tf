@@ -9,7 +9,7 @@ variable "database_engine" {
    default = "mysql"
 
    validation {
-     condition = contains(["mysql", "postgres", "oracle", "mssql"], var.input_parameter)
+     condition = contains(["mysql", "postgres", "oracle", "mssql"], var.database_engine)
      error_message = "DB engine options is limited to one of [mysql, postgres, oracle, mssql]"
    }
 
