@@ -52,10 +52,10 @@ variable "iam_database_authentication_enabled" {
   default = true
 }
 
-variable "vpc_security_group_ids" {
-  type = list(string)
-  description = "List of VPC security groups to associate and protect database"
-}
+# variable "vpc_security_group_ids" {
+#   type = list(string)
+#   description = "List of VPC security groups to associate and protect database"
+# }
 
 
 variable "tags" {

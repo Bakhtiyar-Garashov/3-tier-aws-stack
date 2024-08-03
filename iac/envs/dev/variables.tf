@@ -90,7 +90,7 @@ variable "database_engine" {
    default = "mysql"
 
    validation {
-     condition = contains(["mysql", "postgres", "oracle", "mssql"], var.input_parameter)
+     condition = contains(["mysql", "postgres", "oracle", "mssql"], var.database_engine)
      error_message = "DB engine options is limited to one of [mysql, postgres, oracle, mssql]"
    }
 
@@ -133,10 +133,10 @@ variable "iam_database_authentication_enabled" {
   default = true
 }
 
-variable "vpc_security_group_ids" {
-  type = list(string)
-  description = "List of VPC security groups to associate and protect database"
-}
+# variable "vpc_security_group_ids" {
+#   type = list(string)
+#   description = "List of VPC security groups to associate and protect database"
+# }
 
 
 variable "tags" {
@@ -145,13 +145,61 @@ variable "tags" {
   default     = {}
 }
 
-variable "vpc_subnet_ids" {
-  type = list(string)
-  description = "A list of VPC subnet IDs"
-}
-
 variable "deletion_protection" {
   type = bool
   description = "The database can't be deleted when this value is set to true"
   default = true
+}
+
+// Module ASG
+
+variable "asg_name" {
+  description = "The name of the Auto Scaling Group"
+  type        = string
+}
+
+variable "min_size" {
+  description = "The minimum size of instances within Auto Scaling Group"
+  type        = number
+}
+
+variable "max_size" {
+  description = "The maximum size of instances wihtin Auto Scaling Group"
+  type        = number
+}
+
+variable "desired_capacity" {
+  description = "The desired capacity of the Auto Scaling Group"
+  type        = number
+}
+
+variable "health_check_type" {
+  description = "The health check type for the Auto Scaling Group"
+  type        = string
+
+   validation {
+     condition = contains(["EC2", "ELB"], var.health_check_type)
+     error_message = "Healthcheck options is limited to one of [EC2, ELB]"
+   }
+
+}
+
+variable "launch_template_name" {
+  description = "The name of the launch template"
+  type        = string
+}
+
+variable "launch_template_description" {
+  description = "The description of the launch template"
+  type        = string
+}
+
+variable "machine_image_id" {
+  description = "The ID of the machine image (AMI) to use for the instances"
+  type        = string
+}
+
+variable "instance_type" {
+  description = "The instance type to use for the instances"
+  type        = string
 }

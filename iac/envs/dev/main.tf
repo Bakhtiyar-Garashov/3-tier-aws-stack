@@ -27,26 +27,55 @@ module "eks" {
     Terraform   = "true"
     Environment = "dev"
   }
+
+  depends_on = [ module.vpc ]
 }
 
-module "rds" {
-  source = "../../modules/rds/v1.0.0"
+# module "rds" {
+#   source = "../../modules/rds/v1.0.0"
 
-  database_identifier = var.database_identifier
-  database_engine = var.database_engine
-  engine_version = var.engine_version
-  instance_class = var.instance_class
-  allocated_storage = var.allocated_storage
-  database_name = var.database_name
-  database_username = var.database_username
-  database_port = var.database_port
-  iam_database_authentication_enabled = var.cluster_endpoint_public_access
-  // TODO: develop security group module and reference
-  vpc_security_group_ids = [""]
-  vpc_subnet_ids = [module.vpc.private_subnets]
-  deletion_protection = true
+#   database_identifier = var.database_identifier
+#   database_engine = var.database_engine
+#   engine_version = var.engine_version
+#   instance_class = var.instance_class
+#   allocated_storage = var.allocated_storage
+#   database_name = var.database_name
+#   database_username = var.database_username
+#   database_port = var.database_port
+#   iam_database_authentication_enabled = var.cluster_endpoint_public_access
+#   // TODO: develop security group module and reference
+#   vpc_subnet_ids = module.vpc.private_subnets
+#   deletion_protection = true
+#   tags = {
+#     Terraform   = "true"
+#     Environment = "dev"
+#   }
+#   depends_on = [ module.vpc ]
+# }
+
+module "asg" {
+  source = "../../modules/autoscaling-group/v1.0.0"
+
+  asg_name = var.asg_name
+
+  min_size                  = var.min_size
+  max_size                  = var.max_size
+  desired_capacity          = var.desired_capacity
+
+  health_check_type         = var.health_check_type
+  
+  vpc_zone_identifier       = module.vpc.private_subnets
+  
+  # Launch template
+  launch_template_name        = var.launch_template_name
+  launch_template_description = var.launch_template_description
+
+  machine_image_id = var.machine_image_id
+  instance_type     = var.instance_type
+
   tags = {
     Terraform   = "true"
     Environment = "dev"
   }
-}
+  depends_on = [ module.vpc ]
+} 
