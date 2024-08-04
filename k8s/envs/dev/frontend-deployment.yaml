@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: <your-frontend-image>
+          image: public.ecr.aws/h8f4i3i8/payment-system-frontend:latest
           ports:
             - containerPort: 80
           resources:

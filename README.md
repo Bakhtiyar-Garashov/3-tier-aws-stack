@@ -73,6 +73,8 @@ For this task I have used an existing app which I built few years ago for learni
 
 ## Application Deployment - K8S Manifests <a name="application-deployment---k8s-manifests"></a>
 
+I have implemented very basic set of objects in Kubernetes for deployment. All manifests are under [k8s](https://github.com/Bakhtiyar-Garashov/3-tier-aws-stack/tree/master/k8s/envs/dev) folder. I have exposed frontend as ingress with AWS ALB ingress controller annotations. Also, Configmap and Secret objects used for Postgres config and auth credentials. However, using secret type opaque probably is not the safest option.
+
 ## Database and Scaling Solution <a name="database-and-scaling-solution"></a>
 
 To keep things simple, and the cost minimal (we all know, database is expensive in cloud and everywhere :)) I have choosen a single database instance which is AWS RDS Postgres. This istance is sitting in the same VPC, single AZ (eu-central-1a) and in a private subnet. Also, security group has been added to allow inbound traffic only certain conditions, limiting protocol to be TCP, limiting IP with CIDR range and port to be 5432. However, in real world production grade systems single database instance is providing no resillency and high availability. Recommended approach is to use at least one replica (or standby). This architechture provides Redundancy, High availability, Durability and Failover/Switchover. If we check the AWS RDS page it provides 3 options when creating RDS:
