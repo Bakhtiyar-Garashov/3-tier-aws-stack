@@ -90,6 +90,62 @@ Distributing databases across AZs provides high availability and resillency. Dis
 
 ## Application Scaling Options <a name="application-scaling-options"></a>
 
+As the task description asks "The ideal application should be highly available, able to handle traffic spikes, and run on a Kubernetes platform" I'll try to explain my thoughts on making this application scalable and higly available. As we use Kubernetes as target platform with 2 worker nodes there is already high-availability provided to some extent. We have used load balancer to distribute traffic between nodes and we can scale number of pods within nodes using replicas. However for high availability and scalable systems there is more advanced approaches to be implemented. 
+
+Modern EKS cluster autoscaling approaches include mainly one of 2 options below:
+
+1. Cluster-Autoscaler
+
+In order to operate with Cluster-Autoscaler we have to create EC2 Autoscaler node groups with number of EC2 instances. An Auto Scaling group is a collection of Amazon EC2 instances that are treated as a logical unit. You configure settings for a group and its instances as well as define the group’s minimum, maximum, and desired capacity. We have developed [local module](https://github.com/Bakhtiyar-Garashov/3-tier-aws-stack/tree/master/iac/modules/autoscaling-group/v1.0.0) for Auto Scaling group. It is easy task to configure launch templates for instances to be created from. After having Autoscaling Nodegroups we can deploy AWS Cluster autoscaler to our cluster so that Kubernetes manages those nodes on-demand.
+
+2. Karpenter
+
+Karpenter is an open-source project that provides node lifecycle management for Kubernetes clusters. It automates provisioning and deprovisioning of nodes based on the scheduling needs of pods, allowing efficient scaling and cost optimization. Main difference between Karpenter and Cluster Autoscaler is that via Karpenter, we don’t need to create dozens of node groups to achieve the goal.
+
+For more information there is EKS best practices [guide](https://aws.github.io/aws-eks-best-practices/karpenter/)
+
+These options above are scaling options in worker nodes level. However, Kubernetes allows to do scaling in Pod level via HPA and VPA.
+
+- HPA (Horizontal Pod Autoscaler) - scales the number of pods based on CPU utilization metrics.
+- VPA (Vertival Pod Autoscaler) - resizing each Pod's CPU and Memory resource amount.
+
+As a miscellaneous possibility, I'd add that for static resources it is possible to distribute them via CDN (Cloudfront or Cloudflare) distribution globall so that it helps with bandwith to main application stack.
+
 ## Security Measurements <a name="security-measurements"></a>
+
+Providing security is vital. There are many aspects that provide attack surface for the complete stack. I will try to briefly describe them
+
+1. IAM and access management - it is cruical to protect the whole infrastructe from being vulnerable. Some principles to be followed to achieve secure system is to protect credentials, follow least privileage principle and use multiaccount setup for high level of isolation. It is not a rare case that one can forget to push his/her account credentials to remote version control system. 
+2. Protecting incoming traffic from internet via AWS WAF and Shield. They provides measure against common web exploits and ddos attack. 
+3. AWS Firewall security groups - to protect network level (layer 4) traffic filtering. For example, allowing only certain ports to be accessible such as 80, 443, 22 is vital.
+
+4. Kubernetes cluster security 
+  - Securing pods and nodes from vulnerabilities that may come from container images. Using image scanning is a good measure to take. ECR scanning or using open source tools such as Trivy can help
+  - RBAC - Role based access control for access management within Kubernetes cluster elements. Such as who can read pod, or cluster etc.
+  - Generating SBOM for container images to pin what packages and versions included into image
+  - Keeping images minimal is helpful to narrow attack surface
+  - Using image digest, checking integrity and protecting image repositories
+  - Network level security such as TLS certificates and mTLS
+  - Runtime security features can be helpful such as SELinux, SECComp
+  - Keeping cluster version up-to-date to receive latest security updates and patches
+
+5. Application security
+This part is more of a responsibility on the shoulder of application developers. For example, the external dependencies and 3rd party packages are usually main source of vulnerable actions. Also, data encryption and secrets management are important. Here it is overlaping with Kubernetes approach of using and managing secrets within cluster and configs via ConfigMap. Keys (such as AWS KMS) should be rotated often, secrets management and vaults can be used like HashiCorp Vault or AWS SSM.
+
+6. Auditing and logs, access logs, "who did what" level and network level VPC flow logs of AWS.
+
+7. Database security is an important part. Failing to protect user data, and securing access to it can cause a big disaster. 
+ 
+- Database credentials and roles should be well protected, IAM roles can be used for database roles within RDS
+- Turn on encryption for DB instance
+- SSL and TLS certificates for instance
+- Network isolation via VPC and private subnets
+- Security groups
+- Backups
+- Disaster and chaos testing
+- Using database engine-specific measures for more security (example, postgres wal records backups).
+
+
 ## Proposed CI/CD Approach <a name="#proposed-cicd-approaches"></a>
+
 ## Observability / Monitoring for Cluster and Application <a name="observability--monitoring-for-cluster-and-application"></a>
