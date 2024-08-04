@@ -55,7 +55,7 @@ For the cloud objects provisioning I have used Terraform and opted in for modula
     - `vpc/`
       - `v1.0.0/`
             
-Modules folder contains each local module and each local module is built as a wrapper on top of open-source [Terraform modules](https://registry.terraform.io/namespaces/terraform-aws-modules) provided by community. I believe leveraging open source modules is best approach for provision as they have been proven and tested by many projects and the effor to write them from absolute scratch is unnecessary. 
+Modules folder contains each local module and each local module is built as a wrapper on top of open-source [Terraform modules](https://registry.terraform.io/namespaces/terraform-aws-modules) provided by community. I believe leveraging open source modules is best approach for provision as they have been proven and tested by many projects and the effort to write them from absolute scratch is unnecessary. 
 
 Let's now explain preferred module structure. In each module I am using local versioning by folder names, following semantic version. However best approach would be a separate git repos for each module and using git tags and releases as version. Each module consists of files below:
 
@@ -68,9 +68,28 @@ Let's now explain preferred module structure. In each module I am using local ve
 - README.md - module level documentation is vital to showcase your users how to use module. I am using a tool called [terraform-docs](https://terraform-docs.io/) to generate documentation from module. It is handy :)
 
 ## Example Application Description <a name="example-application-description"></a>
+
+For this task I have used an existing app which I built few years ago for learning purposes. The app is quite simple Golang api, Postgres as storage and Vue.js frontend. Both backend and frontend have been packaged as container and pushed to AWS ECR repository. Vue app container includes nginx web server to run and expose on port 80. This container will be exposed as Ingress which also include annotations to create AWS ALB via Kubernetes manifest and AWS ALB ingress controller.
+
 ## Application Deployment - K8S Manifests <a name="application-deployment---k8s-manifests"></a>
+
 ## Database and Scaling Solution <a name="database-and-scaling-solution"></a>
+
+To keep things simple, and the cost minimal (we all know, database is expensive in cloud and everywhere :)) I have choosen a single database instance which is AWS RDS Postgres. This istance is sitting in the same VPC, single AZ (eu-central-1a) and in a private subnet. Also, security group has been added to allow inbound traffic only certain conditions, limiting protocol to be TCP, limiting IP with CIDR range and port to be 5432. However, in real world production grade systems single database instance is providing no resillency and high availability. Recommended approach is to use at least one replica (or standby). This architechture provides Redundancy, High availability, Durability and Failover/Switchover. If we check the AWS RDS page it provides 3 options when creating RDS:
+
+- Multi-AZ DB Cluster - Creates a DB cluster with three DB instances. Each DB instance is in a different Availability Zone. A Multi-AZ DB cluster has one primary DB instance and two readable standby DB instances. Using a Multi-AZ DB cluster provides high availability, increased capacity for read workloads, and lower latency.
+- Multi-AZ DB instance - Creates a primary DB instance with one standby DB instance in a different Availability Zone. Using a Multi-AZ DB instance provides high availability, but the standby DB instance doesn't support connections for read workloads.
+- Single DB instance - Creates a single DB instance in single AZ with no standby instances.
+
+The replication from main instance to the standby is async.
+
+[Source](https://aws.amazon.com/rds/features/multi-az/)
+
+Distributing databases across AZs provides high availability and resillency. Distributed data systems is a complex topic on itself. I highly recommend to check the book [Designing Data-Intensive Applications](https://dataintensive.net/) by Martin Klepmann for learning more on the topic. One of the greates resources imho.
+
+
 ## Application Scaling Options <a name="application-scaling-options"></a>
+
 ## Security Measurements <a name="security-measurements"></a>
 ## Proposed CI/CD Approach <a name="#proposed-cicd-approaches"></a>
 ## Observability / Monitoring for Cluster and Application <a name="observability--monitoring-for-cluster-and-application"></a>

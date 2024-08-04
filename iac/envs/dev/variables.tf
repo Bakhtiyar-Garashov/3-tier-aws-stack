@@ -87,7 +87,7 @@ variable "database_identifier" {
 variable "database_engine" {
    type = string
    description = "Option to use what engine to use"
-   default = "mysql"
+   default = "postgres"
 
    validation {
      condition = contains(["mysql", "postgres", "oracle", "mssql"], var.database_engine)
