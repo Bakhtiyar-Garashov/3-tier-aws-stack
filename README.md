@@ -130,9 +130,10 @@ Providing security is vital. There are many aspects that provide attack surface 
   - Keeping cluster version up-to-date to receive latest security updates and patches
 
 5. Application security
+
 This part is more of a responsibility on the shoulder of application developers. For example, the external dependencies and 3rd party packages are usually main source of vulnerable actions. Also, data encryption and secrets management are important. Here it is overlaping with Kubernetes approach of using and managing secrets within cluster and configs via ConfigMap. Keys (such as AWS KMS) should be rotated often, secrets management and vaults can be used like HashiCorp Vault or AWS SSM.
 
-6. Auditing and logs, access logs, "who did what" level and network level VPC flow logs of AWS.
+6. Auditing and logs, access ("who did what") logs, and network level VPC flow logs of AWS.
 
 7. Database security is an important part. Failing to protect user data, and securing access to it can cause a big disaster. 
  
@@ -148,4 +149,28 @@ This part is more of a responsibility on the shoulder of application developers.
 
 ## Proposed CI/CD Approach <a name="#proposed-cicd-approaches"></a>
 
+Recommended approach is GitOps where the infrastructre provision scripts/templates/modules is stored in a version control system and engineers colloborate in a traditional way such as PRs and branches. It means like application source infrastructure resources such as servers, databases, and network configurations are also managed as code and stored in Git repositories. When changes are made to this infrastructure code, they are automatically tested and deployed in a controlled and repeatable manner, just like changes to the application code in DevOps.This allows you to manage your infrastructure and applications in a consistent, and automated way. Main advantage of Gitops is that it makes sure the Git is the only source of truth.
+
+There are mainly 2 approaches for GitOps CI/CD
+
+1. Pull-based
+
+We make a neccesary change to source code of infra element(s) in Git and the infrastructure keeps track of source and applies new changes to system. It is usually is being done via tools such as ArgoCD. Argo agent is checking the git repo and applies its reconcillation loop to keep infrastructure in sync with the source code.
+
+
+2. Push-based
+
+This is where the developer who makes a change or merges a PR initiates the update sync process. Change(s) in the Git repository triggers a series of commands in the pipeline and applies the update to infrastructure. Some of these tools such as Jenkins, CircleCI, Github Actions.
+
+
 ## Observability / Monitoring for Cluster and Application <a name="observability--monitoring-for-cluster-and-application"></a>
+
+Logging plays a vital role in monitoring and troubleshooting the infrastructure and applications. EKS control plane and worker nodes allow to ingest logs to AWS CloudWatch. Logs can be structured, and segregated based on levels to provide granular control over them. Retention policies is important to provide cost optimization while having monitoring enabled widely. 
+
+We can choose AWS native servies or open source well-known tools for monitoring and observability. Also there are popular open source projects such as https://opentelemetry.io/
+
+Some of key metrics to collect can include, latency, error rates, traffic, cpu and memory utilization on pod level, pod lifecycle statuses such as running, pending failed pods. Also, database queries / read/write latency, connections to instance, cpu memory utilization, read/write throughpout, IOPS, tables and their growth rate etc.
+
+Observability stack may include Grafana as dashboards, Prometheus to export metrics, storage for timeseries metrics such as InfluxDb or TimescalD. You can use Prometheus [metrics-server](https://github.com/kubernetes-sigs/metrics-server). Sidecar pattern could be used to deploy these kind of tools alongside with application pods.
+
+Finally, getting alerts and notifications is important in case of any unexpected events. Such as Cloudwatch Alarms, Grafana alerts, or PagerDuty.
