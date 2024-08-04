@@ -165,12 +165,12 @@ This is where the developer who makes a change or merges a PR initiates the upda
 
 ## Observability / Monitoring for Cluster and Application <a name="observability--monitoring-for-cluster-and-application"></a>
 
-Logging plays a vital role in monitoring and troubleshooting the infrastructure and applications. EKS control plane and worker nodes allow to ingest logs to AWS CloudWatch. Logs can be structured, and segregated based on levels to provide granular control over them. Retention policies is important to provide cost optimization while having monitoring enabled widely. 
+Logging plays a vital role in monitoring and troubleshooting the infrastructure and applications. EKS control plane and worker nodes allow to ingest logs to AWS CloudWatch. Logs can be structured, and segregated based on levels to provide granular control over them. Retention policies is important to provide cost optimization while having monitoring enabled widely. For application level logs we can use Grafana Loki, and Grafana Tempo for traces and events aggregation. 
 
 We can choose AWS native servies or open source well-known tools for monitoring and observability. Also there are popular open source projects such as https://opentelemetry.io/
 
 Some of key metrics to collect can include, latency, error rates, traffic, cpu and memory utilization on pod level, pod lifecycle statuses such as running, pending failed pods. Also, database queries / read/write latency, connections to instance, cpu memory utilization, read/write throughpout, IOPS, tables and their growth rate etc.
 
-Observability stack may include Grafana as dashboards, Prometheus to export metrics, storage for timeseries metrics such as InfluxDb or TimescalD. You can use Prometheus [metrics-server](https://github.com/kubernetes-sigs/metrics-server). Sidecar pattern could be used to deploy these kind of tools alongside with application pods.
+Observability stack may include Grafana as dashboards, Prometheus to export metrics, storage for timeseries metrics such as InfluxDb or TimescalDB. You can use Prometheus [metrics-server](https://github.com/kubernetes-sigs/metrics-server). Sidecar pattern could be used to deploy these kind of tools alongside with application pods.
 
 Finally, getting alerts and notifications is important in case of any unexpected events. Such as Cloudwatch Alarms, Grafana alerts, or PagerDuty.
